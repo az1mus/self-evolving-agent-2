@@ -1,0 +1,7 @@
+# Cargo 配置
+
+[alias]
+# 编译并复制 sources 目录
+build-run = "run --release"
+# 使用自定义脚本编译
+xbuild = ["!powershell", "-File", "./build-and-copy.ps1"]

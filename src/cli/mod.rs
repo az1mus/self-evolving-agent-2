@@ -503,7 +503,11 @@ impl CliApp {
             println!("  系统提示词: {}", 
                 definition.system_prompt.as_deref().unwrap_or("(未设置)")
             );
-            println!("  模型: {}", definition.llm_config.model);
+            if let Some(ref config) = definition.llm_config {
+                println!("  模型: {} (自定义配置)", config.model);
+            } else {
+                println!("  模型: (使用默认配置)");
+            }
             println!();
         }
 

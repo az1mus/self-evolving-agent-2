@@ -3,6 +3,10 @@
 //! 实现会话管理，包括会话创建、保存、加载和历史记录
 //! Session 是运行时容器，包含消息历史和 Agent 实例引用
 //! Agent 定义独立存储，Session 通过 AgentInstance 引用
+//!
+//! Session 包含多层提示词所需的动态内容：
+//! - session_overview: Session 概要，默认为空
+//! - session_summary: Session 总结，由总结器自动生成（以后实现）
 
 use anyhow::{Context, Result};
 use chrono::{DateTime, Utc};
@@ -33,6 +37,14 @@ pub struct Session {
     pub messages: VecDeque<SessionMessage>,
     /// Agent 实例 ID 列表
     pub agent_instance_ids: HashSet<AgentInstanceId>,
+    /// Session 概要
+    /// 默认为空，对话过程中由 Session 调用总结器总结（以后实现）
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub session_overview: Option<String>,
+    /// Session 总结
+    /// 自动总结（以后实现）
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub session_summary: Option<String>,
     /// 元数据
     pub metadata: serde_json::Value,
 }
@@ -48,6 +60,8 @@ impl Session {
             updated_at: now,
             messages: VecDeque::new(),
             agent_instance_ids: HashSet::new(),
+            session_overview: None,
+            session_summary: None,
             metadata: serde_json::json!({}),
         }
     }
@@ -82,6 +96,34 @@ impl Session {
         self.agent_instance_ids.len()
     }
 
+    /// 设置 Session 概要
+    pub fn set_session_overview(&mut self, overview: String) {
+        self.session_overview = Some(overview);
+        self.updated_at = Utc::now();
+    }
+
+    /// 获取 Session 概要
+    pub fn get_session_overview(&self) -> Option<&String> {
+        self.session_overview.as_ref()
+    }
+
+    /// 设置 Session 总结
+    pub fn set_session_summary(&mut self, summary: String) {
+        self.session_summary = Some(summary);
+        self.updated_at = Utc::now();
+    }
+
+    /// 获取 Session 总结
+    pub fn get_session_summary(&self) -> Option<&String> {
+        self.session_summary.as_ref()
+    }
+
+    /// 清除 Session 总结（用于重新生成）
+    pub fn clear_session_summary(&mut self) {
+        self.session_summary = None;
+        self.updated_at = Utc::now();
+    }
+
     /// 添加用户消息
     pub fn add_user_message(&mut self, content: impl Into<String>, agent_instance_id: Option<AgentInstanceId>) {
         self.messages.push_back(SessionMessage {
@@ -110,6 +152,25 @@ impl Session {
     pub fn to_chat_messages(&self) -> Vec<ChatMessage> {
         self.messages
             .iter()
+            .map(|msg| match msg.role {
+                MessageRole::User => ChatMessage::user(&msg.content),
+                MessageRole::Assistant => ChatMessage::assistant(&msg.content),
+                MessageRole::System => ChatMessage::system(&msg.content),
+            })
+            .collect()
+    }
+
+    /// 获取指定 Agent 实例相关的消息上下文
+    /// 用于构建多层提示词中的"上下文"部分
+    pub fn get_agent_context(&self, agent_instance_id: &str) -> Vec<ChatMessage> {
+        self.messages
+            .iter()
+            .filter(|msg| {
+                msg.agent_instance_id
+                    .as_ref()
+                    .map(|id| id == agent_instance_id)
+                    .unwrap_or(true) // 没有关联 agent 的消息包含在所有上下文中
+            })
             .map(|msg| match msg.role {
                 MessageRole::User => ChatMessage::user(&msg.content),
                 MessageRole::Assistant => ChatMessage::assistant(&msg.content),

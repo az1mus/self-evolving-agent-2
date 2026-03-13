@@ -4,6 +4,10 @@
 //! Agent 分为两部分：
 //! - AgentDefinition: Agent 定义/模板，独立存储，可复用
 //! - AgentInstance: Agent 实例，在 Session 中运行
+//!
+//! 结构化提示词：
+//! - structured_prompt: 动态 key-value 结构，格式为 `{"prompt1": "xx", "prompt2": "xx"}`
+//! - 支持 `{{变量名}}` 用于运行时替换
 
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -12,6 +16,7 @@ use uuid::Uuid;
 
 use crate::llm::{ChatMessage, ChatResponse, LlmClient, LlmClientConfig};
 use crate::logger::Logger;
+use crate::prompt::{PromptBuilder, PromptContext, PromptTemplate, StructuredPrompt};
 use crate::session::SessionId;
 
 /// Agent 定义 ID
@@ -33,10 +38,20 @@ pub struct AgentDefinition {
     /// 描述
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
-    /// 系统提示词
+    /// 系统提示词（已废弃，建议使用 structured_prompt）
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub system_prompt: Option<String>,
-    /// LLM 配置
-    pub llm_config: LlmClientConfig,
+    /// 结构化提示词配置
+    /// 格式: `{"prompt1": "xx", "prompt2": "xx"}`
+    /// JSON 中键值对的顺序即为 prompt 组装的顺序
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub structured_prompt: Option<StructuredPrompt>,
+    /// 提示词模板配置（可选）
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub prompt_template: Option<PromptTemplate>,
+    /// LLM 配置（可选，为 None 时使用程序默认配置）
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub llm_config: Option<LlmClientConfig>,
     /// 创建时间
     pub created_at: chrono::DateTime<chrono::Utc>,
     /// 更新时间
@@ -45,13 +60,35 @@ pub struct AgentDefinition {
 
 impl AgentDefinition {
     /// 创建新的 Agent 定义
-    pub fn new(name: String, system_prompt: Option<String>, llm_config: LlmClientConfig) -> Self {
+    pub fn new(name: String, system_prompt: Option<String>, llm_config: Option<LlmClientConfig>) -> Self {
         let now = chrono::Utc::now();
         Self {
             id: Uuid::new_v4().to_string(),
             name,
             description: None,
             system_prompt,
+            structured_prompt: None,
+            prompt_template: None,
+            llm_config,
+            created_at: now,
+            updated_at: now,
+        }
+    }
+
+    /// 创建带有结构化提示词的 Agent 定义
+    pub fn with_structured_prompt(
+        name: String,
+        structured_prompt: StructuredPrompt,
+        llm_config: Option<LlmClientConfig>,
+    ) -> Self {
+        let now = chrono::Utc::now();
+        Self {
+            id: Uuid::new_v4().to_string(),
+            name,
+            description: None,
+            system_prompt: None,
+            structured_prompt: Some(structured_prompt),
+            prompt_template: None,
             llm_config,
             created_at: now,
             updated_at: now,
@@ -64,16 +101,62 @@ impl AgentDefinition {
         self
     }
 
-    /// 更新系统提示词
+    /// 更新系统提示词（向后兼容）
     pub fn set_system_prompt(&mut self, prompt: String) {
         self.system_prompt = Some(prompt);
         self.updated_at = chrono::Utc::now();
     }
 
+    /// 设置结构化提示词
+    pub fn set_structured_prompt(&mut self, prompt: StructuredPrompt) {
+        self.structured_prompt = Some(prompt);
+        self.system_prompt = None; // 清除旧的 system_prompt
+        self.updated_at = chrono::Utc::now();
+    }
+
+    /// 设置提示词模板
+    pub fn set_prompt_template(&mut self, template: PromptTemplate) {
+        self.prompt_template = Some(template);
+        self.updated_at = chrono::Utc::now();
+    }
+
     /// 更新 LLM 配置
-    pub fn set_llm_config(&mut self, config: LlmClientConfig) {
+    pub fn set_llm_config(&mut self, config: Option<LlmClientConfig>) {
         self.llm_config = config;
         self.updated_at = chrono::Utc::now();
+    }
+
+    /// 获取结构化提示词（如果存在）
+    pub fn get_structured_prompt(&self) -> Option<&StructuredPrompt> {
+        self.structured_prompt.as_ref()
+    }
+
+    /// 获取提示词模板
+    pub fn get_prompt_template(&self) -> PromptTemplate {
+        self.prompt_template.clone().unwrap_or_default()
+    }
+
+    /// 构建系统提示词
+    ///
+    /// 合并 Agent 定义中的静态内容和运行时提供的动态变量
+    pub fn build_system_prompt(&self, context: &PromptContext) -> String {
+        // 如果有结构化提示词，使用它
+        if let Some(ref prompt) = self.structured_prompt {
+            let template = self.get_prompt_template();
+            let builder = PromptBuilder::with_template(template);
+            return builder.build(prompt, context);
+        }
+
+        // 否则使用旧的 system_prompt
+        if let Some(ref prompt) = self.system_prompt {
+            // 也支持变量替换
+            let template = self.get_prompt_template();
+            let builder = PromptBuilder::with_template(template);
+            let prompt = StructuredPrompt::new().with("instruction", prompt.clone());
+            return builder.build(&prompt, context);
+        }
+
+        String::new()
     }
 }
 
@@ -154,23 +237,29 @@ impl AgentInstance {
     }
 
     /// 处理消息
+    /// 
     /// messages: Session 的消息历史（不含系统提示词）
-    /// system_prompt: Agent 定义的系统提示词
+    /// context: 提示词上下文，包含运行时变量
+    /// definition: Agent 定义，包含结构化提示词和模板
     pub async fn process(
         &mut self,
         messages: Vec<ChatMessage>,
-        system_prompt: Option<&str>,
+        context: &PromptContext,
+        definition: &AgentDefinition,
     ) -> AgentOutput {
         // 记录
         if let Some(ref logger) = self.logger {
-            let _ = logger.debug("agent", "Processing messages", None);
+            let _ = logger.debug("agent", "Processing messages with structured prompt", None);
         }
+
+        // 构建系统提示词
+        let system_prompt = definition.build_system_prompt(context);
 
         // 构建完整消息：系统提示词 + 会话消息
         let mut full_messages = Vec::new();
 
-        if let Some(prompt) = system_prompt {
-            full_messages.push(ChatMessage::system(prompt));
+        if !system_prompt.is_empty() {
+            full_messages.push(ChatMessage::system(&system_prompt));
         }
 
         full_messages.extend(messages);
@@ -330,11 +419,61 @@ mod tests {
         let def = AgentDefinition::new(
             "Test Agent".to_string(),
             Some("You are helpful.".to_string()),
-            config,
+            Some(config),
         );
 
         assert_eq!(def.name, "Test Agent");
         assert!(def.system_prompt.is_some());
+        assert!(def.llm_config.is_some());
+    }
+
+    #[test]
+    fn test_agent_definition_without_llm_config() {
+        let def = AgentDefinition::new(
+            "Test Agent".to_string(),
+            Some("You are helpful.".to_string()),
+            None,
+        );
+
+        assert_eq!(def.name, "Test Agent");
+        assert!(def.llm_config.is_none());
+    }
+
+    #[test]
+    fn test_agent_definition_with_structured_prompt() {
+        let prompt = StructuredPrompt::new()
+            .with("role", "你是一个助手")
+            .with("instruction", "请使用中文");
+
+        let def = AgentDefinition::with_structured_prompt(
+            "Test Agent".to_string(),
+            prompt,
+            None,
+        );
+
+        assert!(def.structured_prompt.is_some());
+        let sp = def.structured_prompt.unwrap();
+        assert_eq!(sp.len(), 2);
+    }
+
+    #[test]
+    fn test_agent_definition_build_system_prompt() {
+        let prompt = StructuredPrompt::new()
+            .with("role", "你是一个{{role_name}}")
+            .with("instruction", "请使用中文");
+
+        let def = AgentDefinition::with_structured_prompt(
+            "Test Agent".to_string(),
+            prompt,
+            None,
+        );
+
+        let context = PromptContext::new()
+            .set("role_name", "翻译助手");
+
+        let system_prompt = def.build_system_prompt(&context);
+        assert!(system_prompt.contains("你是一个翻译助手"));
+        assert!(system_prompt.contains("请使用中文"));
     }
 
     #[test]
