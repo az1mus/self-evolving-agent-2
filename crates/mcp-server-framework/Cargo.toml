@@ -1,0 +1,30 @@
+[package]
+name = "mcp-server-framework"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "mcp-server"
+path = "src/main.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+thiserror = "1"
+tokio = { version = "1", features = ["full"] }
+async-trait = "0.1"
+clap = { version = "4", features = ["derive"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+tokio-stream = "0.1"
+toml = "0.8"
+anyhow = "1"
+tempfile = "3"
+
+session-manager = { path = "../session-manager" }
+router-core = { path = "../router-core" }
+
+[dev-dependencies]
+tokio-test = "0.4"

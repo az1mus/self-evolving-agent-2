@@ -1,0 +1,22 @@
+# SEA Agent 示例配置文件
+
+# Session 存储路径
+session_store_path = "./sessions"
+
+[router]
+# 最大跳数
+max_hops = 10
+# Drain 超时（秒）
+drain_timeout = 300
+
+# 分类器类型
+# 可选: "RuleBased" 或 { Mock = { default_organic = true } }
+classifier_type = "RuleBased"
+
+[server_defaults]
+# Gossip 心跳间隔（秒）
+heartbeat_interval_secs = 5
+# Gossip 心跳超时（秒）
+heartbeat_timeout_secs = 30
+# 失效检测阈值
+failure_suspect_threshold = 3

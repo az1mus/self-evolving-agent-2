@@ -1,17 +1,22 @@
-[package]
-name = "self-evolving-agent"
+[workspace]
+members = [
+    "crates/session-manager",
+    "crates/router-core",
+    "crates/mcp-server-framework",
+    "crates/concrete-servers",
+    "crates/sea-agent",
+]
+resolver = "2"
+
+[workspace.package]
 version = "0.2.0"
 edition = "2021"
-description = "A self-evolving agent capable of tool and prompt evolution"
 license = "MIT"
 authors = ["Az1mus"]
 
-[dependencies]
+[workspace.dependencies]
 # Async runtime
 tokio = { version = "1", features = ["full"] }
-
-# HTTP client for LLM API
-reqwest = { version = "0.12", features = ["json", "rustls-tls"] }
 
 # Serialization
 serde = { version = "1", features = ["derive"] }
@@ -22,19 +27,26 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 
 # CLI
-dialoguer = "0.11"
-indicatif = "0.17"
-clap = { version = "4", features = ["derive"] }
-
-# Configuration
-directories = "5"
-toml = "0.8"
+clap = { version = "4", features = ["derive", "env"] }
 
 # Utils
 uuid = { version = "1", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
-anyhow = "1"
 thiserror = "1"
+anyhow = "1"
+async-trait = "0.1"
+sha2 = "0.10"
 
-[dev-dependencies]
+# HTTP client (for LLM API)
+reqwest = { version = "0.12", features = ["json", "rustls-tls"] }
+
+# Configuration
+toml = "0.8"
+directories = "5"
+
+# CLI utilities
+dialoguer = "0.11"
+indicatif = "0.17"
+
+# Testing
 tempfile = "3"

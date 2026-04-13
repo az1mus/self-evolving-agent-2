@@ -1,0 +1,39 @@
+[package]
+name = "sea-agent"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "sea"
+path = "src/main.rs"
+
+[dependencies]
+# Workspace dependencies
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+clap = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+async-trait = { workspace = true }
+toml = { workspace = true }
+directories = { workspace = true }
+
+# CLI utilities
+dialoguer = { workspace = true }
+indicatif = { workspace = true }
+
+# Internal dependencies
+session-manager = { path = "../session-manager" }
+router-core = { path = "../router-core" }
+mcp-server-framework = { path = "../mcp-server-framework" }
+concrete-servers = { path = "../concrete-servers" }
+
+[dev-dependencies]
+tempfile = { workspace = true }

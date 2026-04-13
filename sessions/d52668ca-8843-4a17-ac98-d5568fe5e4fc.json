@@ -1,0 +1,47 @@
+{
+  "session_id": "d52668ca-8843-4a17-ac98-d5568fe5e4fc",
+  "created_at": "2026-04-11T08:57:53.137833200Z",
+  "updated_at": "2026-04-11T09:50:53.480537900Z",
+  "state": "active",
+  "servers": {
+    "echo-29eb06f0": {
+      "id": "echo-29eb06f0",
+      "status": "pending",
+      "tools": [
+        "echo"
+      ],
+      "metadata": {
+        "server_type": "echo"
+      }
+    },
+    "calculator-8489f6aa": {
+      "id": "calculator-8489f6aa",
+      "status": "active",
+      "tools": [
+        "add",
+        "subtract",
+        "multiply",
+        "divide"
+      ],
+      "metadata": {
+        "server_type": "calculator"
+      }
+    }
+  },
+  "routing_table": {
+    "capability:subtract": "calculator-8489f6aa",
+    "capability:divide": "calculator-8489f6aa",
+    "capability:add": "calculator-8489f6aa",
+    "capability:multiply": "calculator-8489f6aa",
+    "capability:echo": "echo-29eb06f0"
+  },
+  "message_history": [],
+  "cache": {
+    "input_cache": {},
+    "inference_cache": {}
+  },
+  "config": {
+    "max_hops": 10,
+    "drain_timeout": 300
+  }
+}

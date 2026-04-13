@@ -1,0 +1,22 @@
+# MCP Server 示例配置
+
+[server]
+# Server ID (可选,不指定则自动生成)
+# server_id = "00000000-0000-0000-0000-000000000001"
+
+# Session ID
+# session_id = "00000000-0000-0000-0000-000000000002"
+
+[gossip]
+# 心跳间隔 (秒)
+heartbeat_interval_secs = 5
+# 心跳超时 (秒)
+heartbeat_timeout_secs = 15
+# 拓扑同步间隔 (秒)
+topology_sync_interval_secs = 30
+
+[failure_detection]
+# 可疑阈值 (心跳超时次数)
+suspect_threshold = 2
+# 确认失效阈值
+confirm_threshold = 4
