@@ -432,6 +432,7 @@ impl SeaAgent {
 
         // 注册默认 Servers
         let default_servers = vec![
+            ServerType::LLMGateway,
             ServerType::Echo,
             ServerType::Calculator,
             ServerType::Time,

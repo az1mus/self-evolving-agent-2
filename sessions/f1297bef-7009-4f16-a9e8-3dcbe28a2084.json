@@ -1,0 +1,42 @@
+{
+  "session_id": "f1297bef-7009-4f16-a9e8-3dcbe28a2084",
+  "created_at": "2026-04-13T15:13:56.848357300Z",
+  "updated_at": "2026-04-13T15:15:10.405975400Z",
+  "state": "active",
+  "servers": {},
+  "routing_table": {},
+  "message_history": [
+    {
+      "id": "6b346c58-21e9-4439-8225-b7ba7a070f68",
+      "role": "user",
+      "content": "{\"action\":\"chat\",\"message\":\"hi\",\"type\":\"natural_language\"}",
+      "timestamp": "2026-04-13T15:14:46.896103300Z"
+    },
+    {
+      "id": "a1424fab-d452-4f8b-a8da-b394ef04f4f4",
+      "role": "system",
+      "content": "Routing error: Routing failed: All routers failed",
+      "timestamp": "2026-04-13T15:14:46.897899800Z"
+    },
+    {
+      "id": "9b69498c-b0e3-42c6-9692-4869589ce077",
+      "role": "user",
+      "content": "{\"action\":\"chat\",\"message\":\"quit\",\"type\":\"natural_language\"}",
+      "timestamp": "2026-04-13T15:15:10.405048100Z"
+    },
+    {
+      "id": "dd4a1204-6e2a-4873-9c9f-958b1ad04e53",
+      "role": "system",
+      "content": "Routing error: Routing failed: All routers failed",
+      "timestamp": "2026-04-13T15:15:10.405974800Z"
+    }
+  ],
+  "cache": {
+    "input_cache": {},
+    "inference_cache": {}
+  },
+  "config": {
+    "max_hops": 10,
+    "drain_timeout": 300
+  }
+}

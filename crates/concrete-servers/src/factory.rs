@@ -2,7 +2,7 @@
 //!
 //! 用于创建各种 Server 实例
 
-use crate::servers::{CalculatorServer, CounterServer, EchoServer, KVStoreServer, TimeServer};
+use crate::servers::{CalculatorServer, CounterServer, EchoServer, KVStoreServer, LLMGatewayServer, TimeServer};
 use anyhow::{anyhow, Result};
 use mcp_server_framework::MCPServer;
 use session_manager::SessionId;
@@ -19,12 +19,12 @@ pub enum ServerType {
     Time,
     Counter,
     KVStore,
+    LLMGateway,
     // Phase 3+ 会添加更多类型
     // TextAnalyzer,
     // TextTransformer,
     // HttpClient,
     // FileIO,
-    // LLMGateway,
     // CodeReview,
     // TaskOrchestrator,
     // DataPipeline,
@@ -38,6 +38,7 @@ impl std::fmt::Display for ServerType {
             ServerType::Time => write!(f, "time"),
             ServerType::Counter => write!(f, "counter"),
             ServerType::KVStore => write!(f, "kvstore"),
+            ServerType::LLMGateway => write!(f, "llm_gateway"),
         }
     }
 }
@@ -52,6 +53,7 @@ impl std::str::FromStr for ServerType {
             "time" => Ok(ServerType::Time),
             "counter" => Ok(ServerType::Counter),
             "kvstore" => Ok(ServerType::KVStore),
+            "llm_gateway" | "llmgateway" => Ok(ServerType::LLMGateway),
             _ => Err(anyhow!("Unknown server type: {}", s)),
         }
     }
@@ -110,6 +112,7 @@ impl ServerFactory {
             ServerType::Time => Arc::new(TimeServer::new(id)),
             ServerType::Counter => Arc::new(CounterServer::new(id)),
             ServerType::KVStore => Arc::new(KVStoreServer::new(id)),
+            ServerType::LLMGateway => Arc::new(LLMGatewayServer::new(id)),
         };
 
         Ok(server)

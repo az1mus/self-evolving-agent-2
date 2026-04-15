@@ -28,6 +28,9 @@ directories = { workspace = true }
 # CLI utilities
 dialoguer = { workspace = true }
 indicatif = { workspace = true }
+colored = { workspace = true }
+prettytable-rs = { workspace = true }
+terminal_size = { workspace = true }
 
 # Internal dependencies
 session-manager = { path = "../session-manager" }

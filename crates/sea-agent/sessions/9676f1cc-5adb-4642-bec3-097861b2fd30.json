@@ -1,0 +1,43 @@
+{
+  "session_id": "9676f1cc-5adb-4642-bec3-097861b2fd30",
+  "created_at": "2026-04-13T17:26:12.905249200Z",
+  "updated_at": "2026-04-13T17:26:12.910771800Z",
+  "state": "active",
+  "servers": {
+    "test-echo": {
+      "id": "test-echo",
+      "status": "active",
+      "tools": [
+        "echo"
+      ],
+      "metadata": {
+        "server_type": "echo"
+      }
+    }
+  },
+  "routing_table": {
+    "capability:echo": "test-echo"
+  },
+  "message_history": [
+    {
+      "id": "430be32e-eff2-4fc5-9889-eef10d175dfb",
+      "role": "user",
+      "content": "hi",
+      "timestamp": "2026-04-13T17:26:12.909920800Z"
+    },
+    {
+      "id": "95260e5c-ef97-4b88-9378-2ce54891f828",
+      "role": "system",
+      "content": "Routing error: Routing failed: No capability found in message",
+      "timestamp": "2026-04-13T17:26:12.910771300Z"
+    }
+  ],
+  "cache": {
+    "input_cache": {},
+    "inference_cache": {}
+  },
+  "config": {
+    "max_hops": 10,
+    "drain_timeout": 300
+  }
+}

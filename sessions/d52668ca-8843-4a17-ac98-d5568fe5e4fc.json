@@ -1,7 +1,7 @@
 {
   "session_id": "d52668ca-8843-4a17-ac98-d5568fe5e4fc",
   "created_at": "2026-04-11T08:57:53.137833200Z",
-  "updated_at": "2026-04-11T09:50:53.480537900Z",
+  "updated_at": "2026-04-13T12:56:31.152404300Z",
   "state": "active",
   "servers": {
     "echo-29eb06f0": {
@@ -16,7 +16,7 @@
     },
     "calculator-8489f6aa": {
       "id": "calculator-8489f6aa",
-      "status": "active",
+      "status": "pending",
       "tools": [
         "add",
         "subtract",
@@ -30,12 +30,25 @@
   },
   "routing_table": {
     "capability:subtract": "calculator-8489f6aa",
-    "capability:divide": "calculator-8489f6aa",
-    "capability:add": "calculator-8489f6aa",
     "capability:multiply": "calculator-8489f6aa",
-    "capability:echo": "echo-29eb06f0"
+    "capability:echo": "echo-29eb06f0",
+    "capability:divide": "calculator-8489f6aa",
+    "capability:add": "calculator-8489f6aa"
   },
-  "message_history": [],
+  "message_history": [
+    {
+      "id": "b231d9d3-7c17-43b2-a82f-6b34411004ab",
+      "role": "user",
+      "content": "你好",
+      "timestamp": "2026-04-13T12:56:31.150947200Z"
+    },
+    {
+      "id": "23b3fc9d-3506-488f-b7b9-28042e97bb6f",
+      "role": "system",
+      "content": "Routing error: Routing failed: No capability found in message",
+      "timestamp": "2026-04-13T12:56:31.152403600Z"
+    }
+  ],
   "cache": {
     "input_cache": {},
     "inference_cache": {}

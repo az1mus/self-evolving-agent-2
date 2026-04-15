@@ -67,6 +67,13 @@ impl ServerRegistry {
                 _config.id.unwrap_or_else(|| format!("kvstore-{}", uuid::Uuid::new_v4())),
             )))
         }).ok();
+
+        // LLM Gateway
+        self.register("llm_gateway", "LLM Gateway Server - LLM API integration", |_config, _session_id| {
+            Ok(Arc::new(crate::servers::LLMGatewayServer::new(
+                _config.id.unwrap_or_else(|| format!("llm_gateway-{}", uuid::Uuid::new_v4())),
+            )))
+        }).ok();
     }
 
     /// 注册新的 Server 类型

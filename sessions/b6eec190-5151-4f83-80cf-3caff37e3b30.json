@@ -1,0 +1,30 @@
+{
+  "session_id": "b6eec190-5151-4f83-80cf-3caff37e3b30",
+  "created_at": "2026-04-13T13:46:14.444637200Z",
+  "updated_at": "2026-04-13T13:46:21.400972400Z",
+  "state": "active",
+  "servers": {},
+  "routing_table": {},
+  "message_history": [
+    {
+      "id": "3e0917e5-551c-4c87-9e84-ff7195638d68",
+      "role": "user",
+      "content": "hi",
+      "timestamp": "2026-04-13T13:46:21.400021100Z"
+    },
+    {
+      "id": "3c1adb7b-b4b4-4e7f-be18-ea37ef15cc75",
+      "role": "system",
+      "content": "Routing error: Routing failed: No capability found in message",
+      "timestamp": "2026-04-13T13:46:21.400971700Z"
+    }
+  ],
+  "cache": {
+    "input_cache": {},
+    "inference_cache": {}
+  },
+  "config": {
+    "max_hops": 10,
+    "drain_timeout": 300
+  }
+}

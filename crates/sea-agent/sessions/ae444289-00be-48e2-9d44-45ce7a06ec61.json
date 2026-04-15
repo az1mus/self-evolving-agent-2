@@ -1,0 +1,45 @@
+{
+  "session_id": "ae444289-00be-48e2-9d44-45ce7a06ec61",
+  "created_at": "2026-04-13T17:26:12.905264900Z",
+  "updated_at": "2026-04-13T17:26:12.911791700Z",
+  "state": "active",
+  "servers": {
+    "test-llm": {
+      "id": "test-llm",
+      "status": "active",
+      "tools": [
+        "complete",
+        "chat"
+      ],
+      "metadata": {
+        "server_type": "llmgateway"
+      }
+    }
+  },
+  "routing_table": {
+    "capability:complete": "test-llm",
+    "capability:chat": "test-llm"
+  },
+  "message_history": [
+    {
+      "id": "08ae206e-2b7e-4842-a6ec-51947cc229bb",
+      "role": "user",
+      "content": "hi",
+      "timestamp": "2026-04-13T17:26:12.910776400Z"
+    },
+    {
+      "id": "557937f8-0f0f-4b83-8529-f363d68eb57a",
+      "role": "assistant",
+      "content": "Routed to 1 server(s): test-llm (processing: inorganic)",
+      "timestamp": "2026-04-13T17:26:12.911791200Z"
+    }
+  ],
+  "cache": {
+    "input_cache": {},
+    "inference_cache": {}
+  },
+  "config": {
+    "max_hops": 10,
+    "drain_timeout": 300
+  }
+}

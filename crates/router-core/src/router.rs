@@ -150,6 +150,58 @@ impl Router for ParallelRouter {
     }
 }
 
+/// 有机消息路由器
+///
+/// 将有机处理的消息路由到 LLM Gateway
+pub struct OrganicRouter {
+    /// LLM Gateway Server ID
+    llm_gateway_id: ServerId,
+}
+
+impl OrganicRouter {
+    pub fn new(llm_gateway_id: impl Into<String>) -> Self {
+        Self {
+            llm_gateway_id: llm_gateway_id.into(),
+        }
+    }
+
+    /// 尝试查找 LLM Gateway Server
+    fn find_llm_gateway(session: &Session) -> Option<ServerId> {
+        // 在 Session 的 Server 中查找 LLM Gateway
+        for (server_id, server_info) in &session.servers {
+            if let Some(server_type) = server_info.metadata.get("server_type") {
+                if let Some(type_str) = server_type.as_str() {
+                    // 支持两种格式：llm_gateway 和 llmgateway
+                    if type_str == "llm_gateway" || type_str == "llmgateway" {
+                        return Some(server_id.clone());
+                    }
+                }
+            }
+        }
+        None
+    }
+}
+
+#[async_trait]
+impl Router for OrganicRouter {
+    async fn route(
+        &self,
+        _message: &Message,
+        session: &Session,
+    ) -> Result<Vec<ServerId>, RouterError> {
+        // 尝试查找 LLM Gateway
+        let server_id = Self::find_llm_gateway(session)
+            .unwrap_or_else(|| self.llm_gateway_id.clone());
+
+        tracing::debug!(
+            server_id = %server_id,
+            "Routed organic message to LLM Gateway"
+        );
+
+        Ok(vec![server_id])
+    }
+}
+
 /// 组合路由器
 ///
 /// 按优先级尝试多个路由策略
@@ -188,6 +240,20 @@ impl Router for CompositeRouter {
         message: &Message,
         session: &Session,
     ) -> Result<Vec<ServerId>, RouterError> {
+        // 如果是有机处理消息，尝试找 LLM Gateway
+        if let Some(ProcessingType::Organic) = message.routing.processing_type {
+            // 查找 LLM Gateway
+            if let Some(llm_id) = OrganicRouter::find_llm_gateway(session) {
+                tracing::info!(
+                    message_id = %message.message_id,
+                    server_id = %llm_id,
+                    "Routed organic message to LLM Gateway"
+                );
+                return Ok(vec![llm_id]);
+            }
+        }
+
+        // 否则使用能力路由
         for router in &self.routers {
             match router.route(message, session).await {
                 Ok(servers) => return Ok(servers),

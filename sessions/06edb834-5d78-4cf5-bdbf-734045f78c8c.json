@@ -1,0 +1,73 @@
+{
+  "session_id": "06edb834-5d78-4cf5-bdbf-734045f78c8c",
+  "created_at": "2026-04-13T17:09:03.118365Z",
+  "updated_at": "2026-04-13T17:09:03.130717100Z",
+  "state": "active",
+  "servers": {
+    "calculator-8030b775": {
+      "id": "calculator-8030b775",
+      "status": "active",
+      "tools": [
+        "add",
+        "subtract",
+        "multiply",
+        "divide"
+      ],
+      "metadata": {
+        "server_type": "calculator"
+      }
+    },
+    "echo-98209e4c": {
+      "id": "echo-98209e4c",
+      "status": "active",
+      "tools": [
+        "echo"
+      ],
+      "metadata": {
+        "server_type": "echo"
+      }
+    },
+    "time-0ea3e94d": {
+      "id": "time-0ea3e94d",
+      "status": "active",
+      "tools": [
+        "current_time",
+        "format_time"
+      ],
+      "metadata": {
+        "server_type": "time"
+      }
+    },
+    "llm_gateway-ef73046f": {
+      "id": "llm_gateway-ef73046f",
+      "status": "active",
+      "tools": [
+        "complete",
+        "chat"
+      ],
+      "metadata": {
+        "server_type": "llmgateway"
+      }
+    }
+  },
+  "routing_table": {
+    "capability:format_time": "time-0ea3e94d",
+    "capability:multiply": "calculator-8030b775",
+    "capability:add": "calculator-8030b775",
+    "capability:divide": "calculator-8030b775",
+    "capability:current_time": "time-0ea3e94d",
+    "capability:complete": "llm_gateway-ef73046f",
+    "capability:subtract": "calculator-8030b775",
+    "capability:echo": "echo-98209e4c",
+    "capability:chat": "llm_gateway-ef73046f"
+  },
+  "message_history": [],
+  "cache": {
+    "input_cache": {},
+    "inference_cache": {}
+  },
+  "config": {
+    "max_hops": 10,
+    "drain_timeout": 300
+  }
+}
