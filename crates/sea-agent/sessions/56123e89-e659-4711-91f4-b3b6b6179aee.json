@@ -1,18 +1,19 @@
 {
-  "session_id": "4f844fff-9f69-45a5-a455-808411a3b632",
-  "name": "unnamed",
-  "created_at": "2026-04-13T17:26:12.905428Z",
-  "updated_at": "2026-04-16T12:19:27.312684500Z",
+  "session_id": "56123e89-e659-4711-91f4-b3b6b6179aee",
+  "name": "session-cca46303",
+  "created_at": "2026-04-16T12:19:27.331033800Z",
+  "updated_at": "2026-04-16T12:19:27.336627200Z",
   "state": "active",
   "servers": {
     "test-echo": {
       "id": "test-echo",
-      "name": "unnamed",
-      "status": "pending",
+      "name": "echo-server",
+      "status": "active",
       "tools": [
         "echo"
       ],
       "metadata": {
+        "server_name": "echo-server",
         "server_type": "echo"
       }
     }
@@ -22,16 +23,16 @@
   },
   "message_history": [
     {
-      "id": "21436ade-c58e-4231-8ff7-6c2d3bc8e559",
+      "id": "2476dbd7-92f9-434e-8c59-a2edc4729435",
       "role": "user",
       "content": "{\"action\": \"echo\", \"text\": \"Hello\"}",
-      "timestamp": "2026-04-13T17:26:12.910009800Z"
+      "timestamp": "2026-04-16T12:19:27.335577Z"
     },
     {
-      "id": "1e7eb63b-d137-477d-afd3-d9b7955a31f6",
+      "id": "37f3c4ee-ac16-40fb-b34c-a2065e2eaed5",
       "role": "assistant",
       "content": "Routed to 1 server(s): test-echo (processing: inorganic)",
-      "timestamp": "2026-04-13T17:26:12.910822700Z"
+      "timestamp": "2026-04-16T12:19:27.336625900Z"
     }
   ],
   "cache": {

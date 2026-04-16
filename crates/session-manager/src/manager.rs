@@ -41,7 +41,12 @@ impl SessionManager {
 
     /// 创建新 Session
     pub fn create_session(&self) -> Result<Session, ManagerError> {
-        let session = Session::new();
+        self.create_session_with_name(None)
+    }
+
+    /// 创建带名称的 Session
+    pub fn create_session_with_name(&self, name: Option<String>) -> Result<Session, ManagerError> {
+        let session = Session::with_name(name);
         let path = self.session_path(session.session_id);
         self.store.save(&path, &session)?;
         Ok(session)

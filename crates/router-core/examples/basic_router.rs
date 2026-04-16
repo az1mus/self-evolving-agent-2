@@ -28,6 +28,7 @@ async fn main() -> anyhow::Result<()> {
         "echo-server".to_string(),
         ServerInfo {
             id: "echo-server".to_string(),
+            name: "Echo Server".to_string(),
             status: ServerStatus::Active,
             tools: vec!["echo".to_string()],
             metadata: HashMap::new(),
@@ -39,6 +40,7 @@ async fn main() -> anyhow::Result<()> {
         "code-review-server".to_string(),
         ServerInfo {
             id: "code-review-server".to_string(),
+            name: "Code Review Server".to_string(),
             status: ServerStatus::Active,
             tools: vec!["code_review".to_string()],
             metadata: HashMap::new(),

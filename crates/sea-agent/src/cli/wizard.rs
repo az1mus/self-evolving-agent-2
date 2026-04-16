@@ -2,7 +2,7 @@
 //!
 //! 引导新用户完成初始配置
 
-use dialoguer::{theme::ColorfulTheme, Confirm, Input, Select};
+use dialoguer::{theme::ColorfulTheme, Confirm, Input};
 use std::path::PathBuf;
 
 use crate::config::SeaConfig;

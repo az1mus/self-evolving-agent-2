@@ -159,12 +159,6 @@ pub struct OrganicRouter {
 }
 
 impl OrganicRouter {
-    pub fn new(llm_gateway_id: impl Into<String>) -> Self {
-        Self {
-            llm_gateway_id: llm_gateway_id.into(),
-        }
-    }
-
     /// 尝试查找 LLM Gateway Server
     fn find_llm_gateway(session: &Session) -> Option<ServerId> {
         // 在 Session 的 Server 中查找 LLM Gateway
@@ -417,6 +411,7 @@ mod tests {
             "server-a".to_string(),
             ServerInfo {
                 id: "server-a".to_string(),
+                name: "test-server".to_string(),
                 status: ServerStatus::Active,
                 tools: vec!["code_review".to_string()],
                 metadata: HashMap::new(),

@@ -32,11 +32,18 @@ pub enum ServerStatus {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ServerInfo {
     pub id: ServerId,
+    /// Server 名称（便于识别）
+    #[serde(default = "default_server_name")]
+    pub name: String,
     pub status: ServerStatus,
     pub tools: Vec<String>,
     pub metadata: HashMap<String, serde_json::Value>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub draining_since: Option<DateTime<Utc>>,
+}
+
+fn default_server_name() -> String {
+    "unnamed".to_string()
 }
 
 /// 消息角色
@@ -97,6 +104,9 @@ impl Default for SessionConfig {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Session {
     pub session_id: SessionId,
+    /// Session 名称（便于识别）
+    #[serde(default = "default_session_name")]
+    pub name: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
     pub state: SessionState,
@@ -107,12 +117,23 @@ pub struct Session {
     pub config: SessionConfig,
 }
 
+fn default_session_name() -> String {
+    "unnamed".to_string()
+}
+
 impl Session {
     /// 创建新 Session
     pub fn new() -> Self {
+        Self::with_name(None)
+    }
+
+    /// 创建带名称的 Session
+    pub fn with_name(name: Option<String>) -> Self {
         let now = Utc::now();
+        let session_name = name.unwrap_or_else(|| format!("session-{}", &Uuid::new_v4().to_string()[..8]));
         Self {
             session_id: Uuid::new_v4(),
+            name: session_name,
             created_at: now,
             updated_at: now,
             state: SessionState::Active,
@@ -140,6 +161,7 @@ impl Default for Session {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SessionSummary {
     pub session_id: SessionId,
+    pub name: String,
     pub created_at: DateTime<Utc>,
     pub state: SessionState,
     pub server_count: usize,
@@ -150,6 +172,7 @@ impl From<&Session> for SessionSummary {
     fn from(session: &Session) -> Self {
         Self {
             session_id: session.session_id,
+            name: session.name.clone(),
             created_at: session.created_at,
             state: session.state.clone(),
             server_count: session.servers.len(),
@@ -169,6 +192,14 @@ mod tests {
         assert!(session.servers.is_empty());
         assert!(session.message_history.is_empty());
         assert!(session.routing_table.is_empty());
+        assert!(!session.name.is_empty());
+    }
+
+    #[test]
+    fn test_session_with_name() {
+        let session = Session::with_name(Some("my-session".to_string()));
+        assert_eq!(session.name, "my-session");
+        assert_eq!(session.state, SessionState::Active);
     }
 
     #[test]
@@ -186,11 +217,12 @@ mod tests {
 
     #[test]
     fn test_session_serialization_roundtrip() {
-        let mut session = Session::new();
+        let mut session = Session::with_name(Some("test-session".to_string()));
         session.servers.insert(
             "server-a".to_string(),
             ServerInfo {
                 id: "server-a".to_string(),
+                name: "my-server".to_string(),
                 status: ServerStatus::Active,
                 tools: vec!["tool1".to_string(), "tool2".to_string()],
                 metadata: HashMap::new(),
@@ -209,6 +241,7 @@ mod tests {
         let deserialized: Session = serde_json::from_str(&json).unwrap();
 
         assert_eq!(session.session_id, deserialized.session_id);
+        assert_eq!(session.name, deserialized.name);
         assert_eq!(session.state, deserialized.state);
         assert_eq!(session.servers.len(), deserialized.servers.len());
         assert_eq!(
@@ -229,11 +262,12 @@ mod tests {
 
     #[test]
     fn test_session_summary_from_session() {
-        let mut session = Session::new();
+        let mut session = Session::with_name(Some("summary-test".to_string()));
         session.servers.insert(
             "s1".to_string(),
             ServerInfo {
                 id: "s1".to_string(),
+                name: "server-one".to_string(),
                 status: ServerStatus::Active,
                 tools: vec![],
                 metadata: HashMap::new(),
@@ -242,6 +276,7 @@ mod tests {
         );
 
         let summary = SessionSummary::from(&session);
+        assert_eq!(summary.name, "summary-test");
         assert_eq!(summary.server_count, 1);
         assert_eq!(summary.message_count, 0);
     }

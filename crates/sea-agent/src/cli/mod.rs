@@ -118,7 +118,11 @@ enum Commands {
 #[derive(Subcommand, Debug, Clone)]
 enum SessionActions {
     /// 创建新 Session
-    Create,
+    Create {
+        /// Session 名称
+        #[arg(long)]
+        name: Option<String>,
+    },
 
     /// 列出所有 Session
     List,
@@ -150,6 +154,10 @@ enum ServerActions {
         /// 自定义 Server ID
         #[arg(long)]
         id: Option<String>,
+
+        /// Server 名称
+        #[arg(long)]
+        name: Option<String>,
     },
 
     /// 列出 Server
@@ -360,8 +368,8 @@ impl SeaCli {
         let agent = SeaAgent::new(config).await?;
 
         match action {
-            SessionActions::Create => {
-                let session_id = agent.create_session().await?;
+            SessionActions::Create { name } => {
+                let session_id = agent.create_session_with_name(name).await?;
                 formatter.print_success(&format!("Session created: {}", session_id));
             }
             SessionActions::List => {
@@ -371,7 +379,7 @@ impl SeaCli {
             SessionActions::Show { session_id } => {
                 let id = parse_session_id(&session_id)?;
                 let session = agent.show_session(id).await?;
-                println!("Session: {}", session.session_id);
+                println!("Session: {} ({})", session.session_id, session.name);
                 println!("  State: {:?}", session.state);
                 println!("  Created: {}", session.created_at);
                 println!("  Updated: {}", session.updated_at);
@@ -382,7 +390,7 @@ impl SeaCli {
                 if !session.servers.is_empty() {
                     println!("\n  Registered servers:");
                     for (id, info) in &session.servers {
-                        println!("    - {} [{:?}] tools: {:?}", id, info.status, info.tools);
+                        println!("    - {} ({}) [{:?}] tools: {:?}", id, info.name, info.status, info.tools);
                     }
                 }
 
@@ -417,10 +425,11 @@ impl SeaCli {
                 session,
                 server_type,
                 id,
+                name,
             } => {
                 let session_id = parse_session_id(&session)?;
                 let st = parse_server_type_enum(&server_type)?;
-                let server_id = agent.register_server(session_id, st, id).await?;
+                let server_id = agent.register_server_with_name(session_id, st, id, name).await?;
                 formatter.print_success(&format!("Server registered: {}", server_id));
             }
             ServerActions::List { session } => {

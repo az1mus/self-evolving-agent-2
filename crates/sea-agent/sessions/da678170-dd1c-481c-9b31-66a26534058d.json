@@ -1,18 +1,19 @@
 {
-  "session_id": "9676f1cc-5adb-4642-bec3-097861b2fd30",
-  "name": "unnamed",
-  "created_at": "2026-04-13T17:26:12.905249200Z",
-  "updated_at": "2026-04-16T12:19:27.323982600Z",
+  "session_id": "da678170-dd1c-481c-9b31-66a26534058d",
+  "name": "session-8efb9680",
+  "created_at": "2026-04-16T12:19:27.331721300Z",
+  "updated_at": "2026-04-16T12:19:27.336889500Z",
   "state": "active",
   "servers": {
     "test-echo": {
       "id": "test-echo",
-      "name": "unnamed",
-      "status": "pending",
+      "name": "echo-server",
+      "status": "active",
       "tools": [
         "echo"
       ],
       "metadata": {
+        "server_name": "echo-server",
         "server_type": "echo"
       }
     }
@@ -22,16 +23,16 @@
   },
   "message_history": [
     {
-      "id": "430be32e-eff2-4fc5-9889-eef10d175dfb",
+      "id": "16b6ac81-599e-4a13-ad38-79f912b5e52d",
       "role": "user",
       "content": "hi",
-      "timestamp": "2026-04-13T17:26:12.909920800Z"
+      "timestamp": "2026-04-16T12:19:27.335908800Z"
     },
     {
-      "id": "95260e5c-ef97-4b88-9378-2ce54891f828",
+      "id": "0ed42176-004e-4be3-8133-b8540725bbf0",
       "role": "system",
       "content": "Routing error: Routing failed: No capability found in message",
-      "timestamp": "2026-04-13T17:26:12.910771300Z"
+      "timestamp": "2026-04-16T12:19:27.336888700Z"
     }
   ],
   "cache": {

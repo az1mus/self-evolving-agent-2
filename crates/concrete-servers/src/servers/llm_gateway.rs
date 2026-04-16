@@ -60,7 +60,7 @@ impl LLMGatewayServer {
     }
 
     /// 完成 (completion) 接口
-    async fn complete(&self, prompt: &str, options: Option<serde_json::Value>) -> ToolResult {
+    async fn complete(&self, prompt: &str, _options: Option<serde_json::Value>) -> ToolResult {
         // 如果没有 API Key，返回模拟响应
         if self.config.api_key.is_none() || self.config.api_key.as_ref().map(|k| k.is_empty()).unwrap_or(true) {
             return ToolResult::success(json!({
@@ -118,7 +118,7 @@ impl LLMGatewayServer {
     }
 
     /// 对话 (chat) 接口
-    async fn chat(&self, messages: &serde_json::Value, options: Option<serde_json::Value>) -> ToolResult {
+    async fn chat(&self, messages: &serde_json::Value, _options: Option<serde_json::Value>) -> ToolResult {
         let messages_array = match messages.as_array() {
             Some(arr) => arr,
             None => return ToolResult::error_text("messages must be an array"),

@@ -35,6 +35,8 @@ pub struct SeaAgent {
 struct ServerHolder {
     /// Server 类型
     server_type: ServerType,
+    /// Server 名称
+    name: String,
     /// Session ID
     session_id: SessionId,
     /// 是否正在运行
@@ -45,6 +47,7 @@ struct ServerHolder {
 #[derive(Debug, Clone)]
 pub struct ServerInfo {
     pub id: String,
+    pub name: String,
     pub server_type: ServerType,
     pub session_id: SessionId,
     pub running: bool,
@@ -115,10 +118,14 @@ impl SeaAgent {
                                 false
                             };
 
+                            // 获取 server name
+                            let name = server_info.name.clone();
+
                             server_runners.insert(
                                 server_id.clone(),
                                 ServerHolder {
                                     server_type,
+                                    name,
                                     session_id: session.session_id,
                                     running,
                                 },
@@ -169,9 +176,14 @@ impl SeaAgent {
 
     /// 创建新的 Session
     pub async fn create_session(&self) -> Result<SessionId> {
+        self.create_session_with_name(None).await
+    }
+
+    /// 创建带名称的 Session
+    pub async fn create_session_with_name(&self, name: Option<String>) -> Result<SessionId> {
         let session = self
             .session_manager
-            .create_session()
+            .create_session_with_name(name)
             .map_err(SeaError::Session)?;
         Ok(session.session_id)
     }
@@ -209,6 +221,17 @@ impl SeaAgent {
         server_type: ServerType,
         server_id: Option<String>,
     ) -> Result<String> {
+        self.register_server_with_name(session_id, server_type, server_id, None).await
+    }
+
+    /// 注册带名称的 Server 到 Session
+    pub async fn register_server_with_name(
+        &mut self,
+        session_id: SessionId,
+        server_type: ServerType,
+        server_id: Option<String>,
+        server_name: Option<String>,
+    ) -> Result<String> {
         let id = server_id.unwrap_or_else(|| {
             format!(
                 "{}-{}",
@@ -216,6 +239,8 @@ impl SeaAgent {
                 &uuid::Uuid::new_v4().to_string()[..8]
             )
         });
+
+        let name = server_name.unwrap_or_else(|| format!("{}-server", server_type));
 
         // 创建 Server 实例（验证可以创建）
         let config = ServerConfig::new(server_type.clone()).with_id(&id);
@@ -232,9 +257,13 @@ impl SeaAgent {
             "server_type".to_string(),
             serde_json::to_value(&server_type).unwrap_or_default(),
         );
+        metadata.insert(
+            "server_name".to_string(),
+            serde_json::to_value(&name).unwrap_or_default(),
+        );
         let lifecycle = SessionServerLifecycle::new(&*self.session_manager);
         lifecycle
-            .register_server(session_id, id.clone(), tool_names.clone(), metadata)
+            .register_server_with_name(session_id, id.clone(), Some(name.clone()), tool_names.clone(), metadata)
             .map_err(|e| SeaError::Server(e.to_string()))?;
 
         // 添加路由表条目
@@ -251,6 +280,7 @@ impl SeaAgent {
             id.clone(),
             ServerHolder {
                 server_type,
+                name,
                 session_id,
                 running: false,
             },
@@ -317,6 +347,7 @@ impl SeaAgent {
             .iter()
             .map(|(id, h)| ServerInfo {
                 id: id.clone(),
+                name: h.name.clone(),
                 server_type: h.server_type.clone(),
                 session_id: h.session_id,
                 running: h.running,
@@ -331,6 +362,7 @@ impl SeaAgent {
             .filter(|(_, h)| h.session_id == session_id)
             .map(|(id, h)| ServerInfo {
                 id: id.clone(),
+                name: h.name.clone(),
                 server_type: h.server_type.clone(),
                 session_id: h.session_id,
                 running: h.running,

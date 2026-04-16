@@ -70,6 +70,7 @@ impl OutputFormatter {
 
         table.set_titles(Row::new(vec![
             Cell::new("ID").style_spec("Fc"),
+            Cell::new("Name").style_spec("Fc"),
             Cell::new("State").style_spec("Fc"),
             Cell::new("Servers").style_spec("Fc"),
             Cell::new("Messages").style_spec("Fc"),
@@ -79,6 +80,7 @@ impl OutputFormatter {
         for session in sessions {
             table.add_row(Row::new(vec![
                 Cell::new(&format!("{:.8}", session.session_id)).style_spec("Fd"),
+                Cell::new(&session.name).style_spec("Fb"),
                 Cell::new(&format!("{:?}", session.state)).style_spec("Fc"),
                 Cell::new(&session.server_count.to_string()).style_spec("Fg"),
                 Cell::new(&session.message_count.to_string()).style_spec("Fb"),
@@ -100,6 +102,7 @@ impl OutputFormatter {
 
         table.set_titles(Row::new(vec![
             Cell::new("ID").style_spec("Fb"),
+            Cell::new("Name").style_spec("Fc"),
             Cell::new("Type").style_spec("Fc"),
             Cell::new("Session").style_spec("Fd"),
             Cell::new("Status").style_spec("Fc"),
@@ -114,6 +117,7 @@ impl OutputFormatter {
 
             table.add_row(Row::new(vec![
                 Cell::new(&server.id).style_spec("Fb"),
+                Cell::new(&server.name).style_spec("Fc"),
                 Cell::new(&server.server_type.to_string()),
                 Cell::new(&format!("{:.8}", server.session_id)).style_spec("Fd"),
                 Cell::new(&status.to_string()),

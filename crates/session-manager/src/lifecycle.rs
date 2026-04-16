@@ -36,6 +36,18 @@ impl<'a> ServerLifecycle<'a> {
         tools: Vec<String>,
         metadata: HashMap<String, serde_json::Value>,
     ) -> Result<(), LifecycleError> {
+        self.register_server_with_name(session_id, server_id, None, tools, metadata)
+    }
+
+    /// 注册带名称的 Server
+    pub fn register_server_with_name(
+        &self,
+        session_id: SessionId,
+        server_id: ServerId,
+        name: Option<String>,
+        tools: Vec<String>,
+        metadata: HashMap<String, serde_json::Value>,
+    ) -> Result<(), LifecycleError> {
         let mut session = self.session_manager.load_session(session_id)?;
 
         if session.servers.contains_key(&server_id) {
@@ -45,8 +57,10 @@ impl<'a> ServerLifecycle<'a> {
             )));
         }
 
+        let server_name = name.unwrap_or_else(|| format!("server-{}", &server_id[..8.min(server_id.len())]));
         let server_info = ServerInfo {
             id: server_id.clone(),
+            name: server_name,
             status: ServerStatus::Pending,
             tools,
             metadata,
