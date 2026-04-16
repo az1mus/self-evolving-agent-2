@@ -1,14 +1,14 @@
 {
-  "session_id": "56123e89-e659-4711-91f4-b3b6b6179aee",
-  "name": "session-cca46303",
-  "created_at": "2026-04-16T12:19:27.331033800Z",
-  "updated_at": "2026-04-16T12:45:47.623559Z",
+  "session_id": "6708008e-455b-4c02-9bd4-984f66fc238f",
+  "name": "session-bcfbd352",
+  "created_at": "2026-04-16T12:45:47.624852400Z",
+  "updated_at": "2026-04-16T12:45:47.631543Z",
   "state": "active",
   "servers": {
     "test-echo": {
       "id": "test-echo",
       "name": "echo-server",
-      "status": "pending",
+      "status": "active",
       "tools": [
         "echo"
       ],
@@ -23,16 +23,16 @@
   },
   "message_history": [
     {
-      "id": "2476dbd7-92f9-434e-8c59-a2edc4729435",
+      "id": "83865ece-d7e8-41c2-8ef5-a52f21101e48",
       "role": "user",
       "content": "{\"action\": \"echo\", \"text\": \"Hello\"}",
-      "timestamp": "2026-04-16T12:19:27.335577Z"
+      "timestamp": "2026-04-16T12:45:47.630417100Z"
     },
     {
-      "id": "37f3c4ee-ac16-40fb-b34c-a2065e2eaed5",
+      "id": "bf05fd84-8e88-412f-988a-9e58239e7997",
       "role": "assistant",
       "content": "Routed to 1 server(s): test-echo (processing: inorganic)",
-      "timestamp": "2026-04-16T12:19:27.336625900Z"
+      "timestamp": "2026-04-16T12:45:47.631542100Z"
     }
   ],
   "cache": {

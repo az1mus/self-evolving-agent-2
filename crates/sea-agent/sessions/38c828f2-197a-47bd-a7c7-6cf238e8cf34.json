@@ -1,14 +1,14 @@
 {
-  "session_id": "c092047d-5b32-43c2-a266-28c76981d3a9",
-  "name": "session-f1e8fead",
-  "created_at": "2026-04-16T12:19:27.331618400Z",
-  "updated_at": "2026-04-16T12:45:47.576693100Z",
+  "session_id": "38c828f2-197a-47bd-a7c7-6cf238e8cf34",
+  "name": "session-74c6a67e",
+  "created_at": "2026-04-16T12:45:47.624665Z",
+  "updated_at": "2026-04-16T12:45:47.631626Z",
   "state": "active",
   "servers": {
     "test-llm": {
       "id": "test-llm",
       "name": "llm_gateway-server",
-      "status": "pending",
+      "status": "active",
       "tools": [
         "complete",
         "chat"
@@ -20,21 +20,21 @@
     }
   },
   "routing_table": {
-    "capability:complete": "test-llm",
-    "capability:chat": "test-llm"
+    "capability:chat": "test-llm",
+    "capability:complete": "test-llm"
   },
   "message_history": [
     {
-      "id": "8e32e924-3c6a-4aeb-b2a1-54f33b1064e5",
+      "id": "ffaa8acf-998c-42e4-8b00-aebac6cff93f",
       "role": "user",
       "content": "hi",
-      "timestamp": "2026-04-16T12:19:27.336423200Z"
+      "timestamp": "2026-04-16T12:45:47.630516500Z"
     },
     {
-      "id": "c1800d12-5bde-4c57-8251-c02298161277",
+      "id": "719571cd-432d-4a34-9ae9-7f2a09045ad7",
       "role": "assistant",
       "content": "Routed to 1 server(s): test-llm (processing: inorganic)",
-      "timestamp": "2026-04-16T12:19:27.337295100Z"
+      "timestamp": "2026-04-16T12:45:47.631625200Z"
     }
   ],
   "cache": {

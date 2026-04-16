@@ -1,14 +1,14 @@
 {
-  "session_id": "da678170-dd1c-481c-9b31-66a26534058d",
-  "name": "session-8efb9680",
-  "created_at": "2026-04-16T12:19:27.331721300Z",
-  "updated_at": "2026-04-16T12:45:47.537434500Z",
+  "session_id": "f1fbd345-7b08-4329-8c22-e7bde3145eec",
+  "name": "session-80fdb3b0",
+  "created_at": "2026-04-16T12:45:47.625036400Z",
+  "updated_at": "2026-04-16T12:45:47.631634500Z",
   "state": "active",
   "servers": {
     "test-echo": {
       "id": "test-echo",
       "name": "echo-server",
-      "status": "pending",
+      "status": "active",
       "tools": [
         "echo"
       ],
@@ -23,16 +23,16 @@
   },
   "message_history": [
     {
-      "id": "16b6ac81-599e-4a13-ad38-79f912b5e52d",
+      "id": "8208bcad-ddd6-461a-ac77-a25731907d0e",
       "role": "user",
       "content": "hi",
-      "timestamp": "2026-04-16T12:19:27.335908800Z"
+      "timestamp": "2026-04-16T12:45:47.630411800Z"
     },
     {
-      "id": "0ed42176-004e-4be3-8133-b8540725bbf0",
+      "id": "391c0a69-072e-47b7-a044-362d243dc0ca",
       "role": "system",
       "content": "Routing error: Routing failed: No capability found in message",
-      "timestamp": "2026-04-16T12:19:27.336888700Z"
+      "timestamp": "2026-04-16T12:45:47.631633500Z"
     }
   ],
   "cache": {

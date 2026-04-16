@@ -102,7 +102,21 @@ impl ReplSession {
         if sessions.is_empty() {
             // 没有现有 Session，创建新的
             self.formatter.print_info("No existing sessions found. Creating a new one...");
-            let session_id = self.agent.create_session().await?;
+
+            // 询问 Session 名称
+            let session_name: String = Input::new()
+                .with_prompt("Enter session name (press Enter for auto-generated)")
+                .allow_empty(true)
+                .interact_text()
+                .map_err(|e| crate::error::SeaError::Config(e.to_string()))?;
+
+            let name = if session_name.trim().is_empty() {
+                None
+            } else {
+                Some(session_name.trim().to_string())
+            };
+
+            let session_id = self.agent.create_session_with_name(name).await?;
             self.current_session = Some(session_id);
             self.formatter
                 .print_success(&format!("Created session: {}", session_id));
@@ -112,8 +126,8 @@ impl ReplSession {
                 .iter()
                 .map(|s| {
                     format!(
-                        "{} ({:?}, {} servers)",
-                        s.session_id, s.state, s.server_count
+                        "{} - {} ({:?}, {} servers)",
+                        s.name, s.session_id, s.state, s.server_count
                     )
                 })
                 .collect();
@@ -128,7 +142,20 @@ impl ReplSession {
 
             if selection == options.len() - 1 {
                 // 创建新 Session
-                let session_id = self.agent.create_session().await?;
+                // 询问 Session 名称
+                let session_name: String = Input::new()
+                    .with_prompt("Enter session name (press Enter for auto-generated)")
+                    .allow_empty(true)
+                    .interact_text()
+                    .map_err(|e| crate::error::SeaError::Config(e.to_string()))?;
+
+                let name = if session_name.trim().is_empty() {
+                    None
+                } else {
+                    Some(session_name.trim().to_string())
+                };
+
+                let session_id = self.agent.create_session_with_name(name).await?;
                 self.current_session = Some(session_id);
                 self.formatter
                     .print_success(&format!("Created session: {}", session_id));
@@ -387,7 +414,20 @@ impl ReplSession {
                 print!("{}", self.formatter.format_session_table(&sessions));
             }
             "create" => {
-                let session_id = self.agent.create_session().await?;
+                // 询问 Session 名称
+                let session_name: String = Input::new()
+                    .with_prompt("Enter session name (press Enter for auto-generated)")
+                    .allow_empty(true)
+                    .interact_text()
+                    .map_err(|e| crate::error::SeaError::Config(e.to_string()))?;
+
+                let name = if session_name.trim().is_empty() {
+                    None
+                } else {
+                    Some(session_name.trim().to_string())
+                };
+
+                let session_id = self.agent.create_session_with_name(name).await?;
                 self.formatter
                     .print_success(&format!("Created session: {}", session_id));
             }
@@ -467,7 +507,21 @@ impl ReplSession {
                 };
 
                 let server_type = self.parse_server_type(args[1])?;
-                let server_id = self.agent.register_server(session_id, server_type, None).await?;
+
+                // 询问 Server 名称
+                let server_name: String = Input::new()
+                    .with_prompt("Enter server name (press Enter for auto-generated)")
+                    .allow_empty(true)
+                    .interact_text()
+                    .map_err(|e| crate::error::SeaError::Config(e.to_string()))?;
+
+                let name = if server_name.trim().is_empty() {
+                    None
+                } else {
+                    Some(server_name.trim().to_string())
+                };
+
+                let server_id = self.agent.register_server_with_name(session_id, server_type, None, name).await?;
                 self.formatter
                     .print_success(&format!("Registered server: {}", server_id));
             }
